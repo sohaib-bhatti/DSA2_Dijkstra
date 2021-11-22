@@ -70,21 +70,38 @@ void graph::dijkstra(const string& start){
     node *source = static_cast<node *> (vertexNames.getPointer(start));
     source->sourceCost = 0;
     source->prevNode = nullptr;
-    source->known = true;
+    source->known = false;
     dijkstraHeap.insert(source->name, source->sourceCost, source);
 
-    node *temp = nullptr;
+    //void *temp = nullptr;
     string stringTmp;
     int cost;
 
     while(noVertices > 0){
-        dijkstraHeap.deleteMin(&stringTmp, &cost, temp);
-        if(!temp->known){
-            temp->known = true;
-            for (auto const &currentAdjNode: temp->adjList) {
-                if ((temp->sourceCost + currentAdjNode.cost) < static_cast<node *>(currentAdjNode.nodeP)->sourceCost) {
-                    static_cast<node *>(currentAdjNode.nodeP)->sourceCost = temp->sourceCost + currentAdjNode.cost;
-                    static_cast<node *>(currentAdjNode.nodeP)->prevNode = temp;
+
+        dijkstraHeap.deleteMin(&stringTmp, &cost);
+        cout << "deleted min" << endl;
+        node *nodeTemp = static_cast<node *> (vertexNames.getPointer(stringTmp));
+        cout << "current node: " << nodeTemp << ": " << nodeTemp->name << endl;
+
+        cout << boolalpha;
+        cout << "adjlist empty: " << nodeTemp->adjList.empty() << endl;
+        if(nodeTemp->adjList.empty()){
+            break;
+        }
+
+        if(!nodeTemp->known){
+            cout << "hellooooo I'm in the if statement" << endl;
+            nodeTemp->known = true;
+
+            for (auto const &currentAdjNode: nodeTemp->adjList) {
+
+                if ((nodeTemp->sourceCost + currentAdjNode.cost) < static_cast<node *>(currentAdjNode.nodeP)->sourceCost) {
+
+                    static_cast<node *>(currentAdjNode.nodeP)->sourceCost = nodeTemp->sourceCost + currentAdjNode.cost;
+
+                    static_cast<node *>(currentAdjNode.nodeP)->prevNode = nodeTemp;
+
                     dijkstraHeap.insert(static_cast<node *>(currentAdjNode.nodeP)->name,
                                         static_cast<node *>(currentAdjNode.nodeP)->sourceCost,
                                         currentAdjNode.nodeP);
@@ -100,8 +117,9 @@ void graph::dijkstra(const string& start){
 void graph::outputDijkstra(const string& start, const string& filename){
     node * temp;
     list<string> vertexList;
+    ofstream output(filename);
     for(auto const& currentNode : masterList){
-        ofstream output(filename);
+
         if(currentNode->prevNode == nullptr){
             output << currentNode->name << ": NO PATH" << endl;
         }

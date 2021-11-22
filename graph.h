@@ -21,7 +21,7 @@ private:
         string name;
         list <adjNode> adjList;
         int sourceCost;
-        bool known;
+        bool known = false;
         void * prevNode = nullptr;
     };
 
