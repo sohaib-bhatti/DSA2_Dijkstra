@@ -120,6 +120,9 @@ void graph::outputDijkstra(const string& start, const string& filename){
     ofstream output(filename);
     for(auto const& currentNode : masterList){
 
+        if(currentNode->name == start){
+            output << start << ": 0 " << "[" << start << "]" << endl;
+        }
         if(currentNode->prevNode == nullptr){
             output << currentNode->name << ": NO PATH" << endl;
         }
