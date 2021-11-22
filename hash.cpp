@@ -9,7 +9,6 @@ using namespace std;
  * This defines the hash class. Modified from the hash class from Program 1.
  * */
 
-
 // constructor
 hashTable::hashTable(int size) {
     capacity = getPrime(size);
@@ -26,7 +25,7 @@ int hashTable::insert(const string &key, void *pv){
     }
 
     int hashedKey = hashTable::hash(key);
-    // checks if name already exists
+    // checks if key already exists
     if(contains(key)){
         return 1;
     }
@@ -55,7 +54,7 @@ bool hashTable::contains(const string &key){
     return true;
 }
 
-// looks for name and returns pointer if found, boolean is set to false if not found (and nullptr is returned)
+// looks for key and returns pointer if found, boolean is set to false if not found (and nullptr is returned)
 void * hashTable::getPointer(const std::string &key, bool *b){
     int hashedKey = findPos(key);
 
@@ -70,7 +69,7 @@ void * hashTable::getPointer(const std::string &key, bool *b){
 
     return data[hashedKey].pv;
 }
-// looks for name and sets the associated pointer if found
+// looks for key and sets the associated pointer if found
 int hashTable::setPointer(const std::string &key, void *pv){
     int hashedKey = findPos(key);
 

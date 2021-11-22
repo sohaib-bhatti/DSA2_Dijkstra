@@ -74,9 +74,9 @@ int main(){
 
     graph myGraph = loadGraph("input.txt");
 
-    myGraph.dijkstra("v1");
+    myGraph.dijkstra("v7");
 
-    myGraph.outputDijkstra("v1", "output.txt");
+    myGraph.outputDijkstra("v7", "output.txt");
 
 
     /*

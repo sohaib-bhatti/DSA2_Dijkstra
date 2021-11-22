@@ -70,36 +70,19 @@ void graph::dijkstra(const string& start){
     node *source = static_cast<node *> (vertexNames.getPointer(start));
     source->sourceCost = 0;
     source->prevNode = nullptr;
-    source->known = false;
     dijkstraHeap.insert(source->name, source->sourceCost, source);
 
-    //void *temp = nullptr;
     string stringTmp;
-    int cost;
 
-    while(noVertices > 0){
-
-        dijkstraHeap.deleteMin(&stringTmp, &cost);
-        cout << "deleted min" << endl;
+    while(dijkstraHeap.fullSpaces != 0){
+        dijkstraHeap.deleteMin(&stringTmp);
         node *nodeTemp = static_cast<node *> (vertexNames.getPointer(stringTmp));
-        cout << "current node: " << nodeTemp << ": " << nodeTemp->name << endl;
 
-        cout << boolalpha;
-        cout << "adjlist empty: " << nodeTemp->adjList.empty() << endl;
-        if(nodeTemp->adjList.empty()){
-            break;
-        }
 
-        if(!nodeTemp->known){
-            cout << "hellooooo I'm in the if statement" << endl;
-            nodeTemp->known = true;
-
-            for (auto const &currentAdjNode: nodeTemp->adjList) {
-
+        for (auto const &currentAdjNode: nodeTemp->adjList){
+            if(!(static_cast<node *>(currentAdjNode.nodeP)->known)){
                 if ((nodeTemp->sourceCost + currentAdjNode.cost) < static_cast<node *>(currentAdjNode.nodeP)->sourceCost) {
-
                     static_cast<node *>(currentAdjNode.nodeP)->sourceCost = nodeTemp->sourceCost + currentAdjNode.cost;
-
                     static_cast<node *>(currentAdjNode.nodeP)->prevNode = nodeTemp;
 
                     dijkstraHeap.insert(static_cast<node *>(currentAdjNode.nodeP)->name,
@@ -107,7 +90,6 @@ void graph::dijkstra(const string& start){
                                         currentAdjNode.nodeP);
                 }
             }
-            noVertices--;
         }
 
 
@@ -119,28 +101,34 @@ void graph::outputDijkstra(const string& start, const string& filename){
     list<string> vertexList;
     ofstream output(filename);
     for(auto const& currentNode : masterList){
-
         if(currentNode->name == start){
-            output << start << ": 0 " << "[" << start << "]" << endl;
+            output << currentNode->name << ": " << currentNode->sourceCost << " [" << currentNode->name << "]" << endl;
         }
-        if(currentNode->prevNode == nullptr){
-            output << currentNode->name << ": NO PATH" << endl;
+        else if(currentNode->prevNode == nullptr){
+           output << currentNode->name << ": NO PATH" << endl;
         }
         else{
+            vertexList.push_front(currentNode->name);
             temp = static_cast<node *>(currentNode->prevNode);
             while(true){
                 if(temp->name == start){
+                    vertexList.push_front(start);
                     break;
                 }
                 vertexList.push_front(temp->name);
                 temp = static_cast<node *>(temp->prevNode);
 
             }
-            output << currentNode->name << ": " << currentNode->sourceCost << " [";
+            string path = currentNode->name + ": " + to_string(currentNode->sourceCost) + " [";
             for(auto const& cVertex : vertexList){
-                output << cVertex << ", ";
+                path += (cVertex + ", ");
             }
-            output << "]" << endl;
+            path.resize(path.size() - 2);
+            path += "]";
+            output << path << endl;
+            vertexList.clear();
+            path.clear();
+
         }
 
     }

@@ -16,8 +16,8 @@ public:
     //
     // insert - Inserts a new node into the binary heap
     //
-    // Inserts a node with the specified id string, name,
-    // and optionally a pointer.  They name is used to
+    // Inserts a node with the specified id string, key,
+    // and optionally a pointer.  They key is used to
     // determine the final position of the new node.
     //
     // Returns:
@@ -29,7 +29,7 @@ public:
     int insert(const std::string &id, int key, void *pv = nullptr);
 
     //
-    // setKey - set the name of the specified node to the specified value
+    // setKey - set the key of the specified node to the specified value
     //
     // I have decided that the class should provide this member function
     // instead of two separate increaseKey and decreaseKey functions.
@@ -41,12 +41,12 @@ public:
     int setKey(const std::string &id, int key);
 
     //
-    // deleteMin - return the data associated with the smallest name
+    // deleteMin - return the data associated with the smallest key
     //             and delete that node from the binary heap
     //
     // If pId is supplied (i.e., it is not nullptr), write to that address
     // the id of the node being deleted. If pKey is supplied, write to
-    // that address the name of the node being deleted. If ppData is
+    // that address the key of the node being deleted. If ppData is
     // supplied, write to that address the associated void pointer.
     //
     // Returns:
@@ -58,7 +58,7 @@ public:
     //
     // remove - delete the node with the specified id from the binary heap
     //
-    // If pKey is supplied, write to that address the name of the node
+    // If pKey is supplied, write to that address the key of the node
     // being deleted. If ppData is supplied, write to that address the
     // associated void pointer.
     //
@@ -68,10 +68,9 @@ public:
     //
     int remove(const std::string &id, int *pKey = nullptr, void *ppData = nullptr);
 
-private:
-
-    int fullSpaces;
     int size;
+    int fullSpaces;
+private:
 
     class node{
     public:

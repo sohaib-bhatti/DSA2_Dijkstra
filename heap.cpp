@@ -5,7 +5,6 @@
  * This defines the heap class.
  * */
 
-
 #include "heap.h"
 
 #include <string>
@@ -17,7 +16,7 @@ heap::heap(int size):mapping(size * 2){
     // since it starts out empty, make fullSpaces 0
     this->fullSpaces = 0;
 }
-// inserts node with specified ID, name, and pointer (if given)
+// inserts node with specified ID, key, and pointer (if given)
 int heap::insert(const std::string &id, int key, void *pv) {
     if(fullSpaces == size){
         return 1;
@@ -29,7 +28,7 @@ int heap::insert(const std::string &id, int key, void *pv) {
 
     fullSpaces++;
 
-    // fills a node
+    // fills an empty node
     data[fullSpaces].stringID = id;
     data[fullSpaces].key = key;
     data[fullSpaces].p = pv;
@@ -49,7 +48,7 @@ int heap::setKey(const std::string &id, int key){
     if(!b){
         return 1;
     }
-    // stores the previous name to check whether to percolate up or down, and changes name
+    // stores the previous key to check whether to percolate up or down, and changes key
     int temp = pn->key;
     pn->key = key;
 
@@ -80,8 +79,7 @@ int heap::deleteMin(std::string *pId , int *pKey, void *ppData){
         *(static_cast<void **> (ppData)) = min.p;
     }
     // move last object up and percolate it down to ensure everything is sorted
-    fullSpaces--;
-    data[1] = data[fullSpaces];
+    data[1] = data[fullSpaces--];
     percolateDown(1);
 
     // remove ID from hash table
@@ -104,13 +102,14 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
         *(static_cast<void **> (ppData)) = pn->p;
     }
 
-    // stores the previous name to check whether to percolate up or down, and changes name
+    // stores the previous key to check whether to percolate up or down, and changes key
     int temp = pn->key;
     *pn = data[fullSpaces--];
 
     if(temp > pn -> key){
         percolateUp(getPos(pn));
     }
+
     else if(temp < pn -> key){
         percolateDown(getPos(pn));
     }
@@ -119,7 +118,7 @@ int heap::remove(const std::string &id, int *pKey, void *ppData){
 }
 
 void heap::percolateUp(int posCur){
-    // keeps iterating until the child is greater than the parent
+    // keeps iterating until the child is less than the parent
     while(data[posCur].key < data[posCur/2].key) {
         // keep swapping
         node temp = (data[posCur/2]);
@@ -138,24 +137,28 @@ void heap::percolateDown(int posCur) {
     int child;
     node temp = data[posCur];
 
+    // only keep going until
     for(; posCur * 2 <= fullSpaces; posCur = child){
         child = posCur * 2;
+        // check if right child is smaller than left child. if so, percolate down to right child
         if(child != fullSpaces && data[child + 1].key < data[child].key){
             ++child;
         }
+        // check if current key is smaller than the key being percolated down. if so, move the current key up. Update pointer
         if(data[child].key < temp.key){
             data[posCur] = data[child];
             mapping.setPointer(data[posCur].stringID, &data[posCur]);
         }
-        else{
+        else {
             break;
         }
     }
+    // once you have reached the correct location, move the item being percolated down to the correct location. Update pointer
     data[posCur] = temp;
     mapping.setPointer(data[posCur].stringID, &data[posCur]);
 }
 
-// provided
+// provided by Prof. Sable
 int heap::getPos(node *pn){
     int pos = pn - &data[0];
     return pos;
