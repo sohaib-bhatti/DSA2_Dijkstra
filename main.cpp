@@ -72,32 +72,30 @@ int main(){
     string startingVertex;
     string outputFile;
 
-    graph myGraph = loadGraph("input.txt");
-
-    myGraph.dijkstra("v7");
-
-    myGraph.outputDijkstra("v7", "output.txt");
-
-
-    /*
     cout << "Enter name of graph file: ";
     cin >> inputFile;
     cout << endl;
     graph givenGraph = loadGraph(inputFile);
 
-    cout << "Enter name of starting vertex: " ;
+    cout << "Enter name of starting vertex: ";
     cin >> startingVertex;
     cout << endl;
 
+    while(!givenGraph.vertexNames.contains(startingVertex)){
+        cout << "That is an invalid vertex name. Please try again: ";
+        cin >> startingVertex;
+        cout << endl;
+    }
+
     clock_t t1 = clock();
-    givenGraph.Dijkstra(startingVertex);
+    givenGraph.dijkstra(startingVertex);
     clock_t t2 = clock();
     double timeDiff = ((double) (t2 - t1)) / CLOCKS_PER_SEC;
     cout << "Total time (in seconds) to apply dijkstra's algorithm: " << timeDiff << endl;
 
     cout << "Enter name of output file: " << endl;
-    cin >> startingVertex;
-    cout << endl;
-    */
+    cin >> outputFile;
+    givenGraph.outputDijkstra(startingVertex, outputFile);
+
 
 }

@@ -26,6 +26,7 @@ private:
     };
 
     list <node*> masterList;
+public:
     hashTable vertexNames;
 
 
