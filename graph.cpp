@@ -5,6 +5,7 @@
 #include "graph.h"
 #include <iostream>
 #include <fstream>
+#include <climits>
 
 
 graph::graph() = default;
@@ -41,7 +42,7 @@ void graph::addEdge(const string& source, const string& dest, int cost){
         destNode = static_cast<node *> (vertexNames.getPointer(dest));
     }
 
-    // create a pseudo-node that stores info about the edge and pushes it to the source's adjacency list
+    // create a pseudo-node that stores info about the edge and push it to the source's adjacency list
     adjNode destPush;
     destPush.name = dest;
     destPush.cost = cost;
@@ -51,21 +52,15 @@ void graph::addEdge(const string& source, const string& dest, int cost){
 
 }
 
-void graph::printGraph(){
-    for(auto const& currentNode : masterList){
-        cout << endl << "VERTEX: " << currentNode->name << endl;
-        for(auto const& currentNode1 : currentNode->adjList){
-            cout << "CONNECTED VERTEX: " << currentNode1.name << " (" << currentNode1.cost << ")" << endl;
-        }
-    }
-}
-
+// implements Dijkstra's algorithm
 void graph::dijkstra(const string& start){
-    int noVertices = masterList.size();
-    heap dijkstraHeap(noVertices);
+
+    // creates a heap to prioritize vertices for the algorithm
+    heap dijkstraHeap(masterList.size());
+
+    // ensures that the initial distance from the source is infinity. Initializes the source node.
     for (auto const& currentNode : masterList){
         currentNode->sourceCost = INT_MAX;
-        currentNode->known = false;
     }
     node *source = static_cast<node *> (vertexNames.getPointer(start));
     source->sourceCost = 0;
@@ -73,23 +68,24 @@ void graph::dijkstra(const string& start){
     dijkstraHeap.insert(source->name, source->sourceCost, source);
 
     string stringTmp;
-
     while(dijkstraHeap.fullSpaces != 0){
+        // looks for the currently cheapest node that isn't known and stores it in nodeTemp
         dijkstraHeap.deleteMin(&stringTmp);
         node *nodeTemp = static_cast<node *> (vertexNames.getPointer(stringTmp));
 
-
+        // the algorithm
         for (auto const &currentAdjNode: nodeTemp->adjList){
-            if(!(static_cast<node *>(currentAdjNode.nodeP)->known)){
-                if ((nodeTemp->sourceCost + currentAdjNode.cost) < static_cast<node *>(currentAdjNode.nodeP)->sourceCost) {
-                    static_cast<node *>(currentAdjNode.nodeP)->sourceCost = nodeTemp->sourceCost + currentAdjNode.cost;
-                    static_cast<node *>(currentAdjNode.nodeP)->prevNode = nodeTemp;
+            // check if the current cost of that vertex plus the weight of the new cost is lower than the older one
+            if((nodeTemp->sourceCost + currentAdjNode.cost) < static_cast<node *>(currentAdjNode.nodeP)->sourceCost){
+                // update the old cost of that vertex and store the previous node on the best path
+                static_cast<node *>(currentAdjNode.nodeP)->sourceCost = nodeTemp->sourceCost + currentAdjNode.cost;
+                static_cast<node *>(currentAdjNode.nodeP)->prevNode = nodeTemp;
 
-                    dijkstraHeap.insert(static_cast<node *>(currentAdjNode.nodeP)->name,
-                                        static_cast<node *>(currentAdjNode.nodeP)->sourceCost,
-                                        currentAdjNode.nodeP);
+                //insert adjacent nodes into the heap as they are not known
+                dijkstraHeap.insert(static_cast<node *>(currentAdjNode.nodeP)->name,
+                                    static_cast<node *>(currentAdjNode.nodeP)->sourceCost,
+                                    currentAdjNode.nodeP);
                 }
-            }
         }
 
 
@@ -107,6 +103,7 @@ void graph::outputDijkstra(const string& start, const string& filename){
         else if(currentNode->prevNode == nullptr){
            output << currentNode->name << ": NO PATH" << endl;
         }
+        // push_front() is the equivalent of a stack
         else{
             vertexList.push_front(currentNode->name);
             temp = static_cast<node *>(currentNode->prevNode);

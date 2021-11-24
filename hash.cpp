@@ -34,12 +34,13 @@ int hashTable::insert(const string &key, void *pv){
     // if mapped value is occupied (or lazily deleted), keep moving to the right
     while(data[hashedKey].isOccupied && !data[hashedKey].isDeleted){
         hashedKey++;
-        if(hashedKey == capacity - 1){
+        if(hashedKey == capacity){
             hashedKey = 0;
         }
     }
     data[hashedKey].key = key;
     data[hashedKey].isOccupied = true;
+    data[hashedKey].isDeleted = false;
     data[hashedKey].pv = pv;
     filled++;
     return 0;
@@ -113,13 +114,12 @@ int hashTable::hash(const string &key){
 // checks at mapped value, then looks for it manually
 int hashTable::findPos(const string &key){
     int hashedKey = hashTable::hash(key);
-    while(data[hashedKey].isOccupied){
-
+    while(data[hashedKey].isOccupied || data[hashedKey].isDeleted){
         if(data[hashedKey].key == key){
             return hashedKey;
         }
         hashedKey++;
-        if(hashedKey == capacity - 1){
+        if(hashedKey == capacity){
             hashedKey = 0;
         }
 
@@ -139,7 +139,7 @@ bool hashTable::rehash(){
     filled = 0;
 
     for (const hashItem& item : temp){
-        if (item.isOccupied){
+        if (item.isOccupied && !item.isDeleted){
             insert(item.key, item.pv);
         }
     }
@@ -148,7 +148,7 @@ bool hashTable::rehash(){
 }
 int hashTable::getPrime(int size){
     //list of primes obtained from https://planetmath.org/goodhashtableprimes
-    int primes[] = {24593, 49157, 98317, 196613, 393241, 786433,
+    int primes[] = {7, 17, 24593, 49157, 98317, 196613, 393241, 786433,
                     1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457,
                     1610612741};
     for(int i: primes){

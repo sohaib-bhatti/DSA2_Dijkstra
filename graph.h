@@ -21,7 +21,6 @@ private:
         string name;
         list <adjNode> adjList;
         int sourceCost;
-        bool known = false;
         void * prevNode = nullptr;
     };
 
@@ -32,7 +31,6 @@ public:
 
 public:
     void addEdge(const string& source, const string& dest, int cost);
-    void printGraph();
     void dijkstra(const string& start);
     void outputDijkstra(const string& start, const string& filename);
 
